@@ -12,6 +12,9 @@ void webserverSetup() {
 
   webserver.on("/status", apiStatus);
   webserver.on("/wifi/networks", apiWifiNetworks);
+  webserver.on("/wifi/disconnect", apiWifiDisconnect);
+  webserver.on("/wifi/connect", apiWifiConnect);
+  
   webserver.onNotFound([]() {
     if (!webserverServeFileFromSPIFFS(webserver.uri()))
       webserver.send(404, "text/plain", "404: Not Found");
@@ -83,12 +86,38 @@ void apiWifiNetworks() {
       case ENC_TYPE_CCMP: network["encryption"] = "WPA2/PSK"; break;
       case ENC_TYPE_NONE: break;
       case ENC_TYPE_AUTO: network["encryption"] = "WPA/WPA2/PSK"; break;
-      default: network["encryption"] = "WPA2 Enterprise"; break;
+      default: network["encryption"] = "WPA2 Enterprise`"; break;
     }
   }
 
   String json;
   networks.printTo(json);
+  
+  webserver.send(200, "application/json", json);
+}
+
+void apiWifiDisconnect() {
+  JsonObject &root = jsonBuffer.createObject();
+  root["status"] = "ok";
+
+  String json;
+  root.printTo(json);
+  
+  webserver.send(200, "application/json", json);
+  wifiDisconnect();
+}
+
+void apiWifiConnect() {
+  String ssid = webserver.arg("ssid");
+  String password = webserver.arg("password");
+
+  wifiConnect(ssid, password);
+
+  JsonObject &root = jsonBuffer.createObject();
+  root["status"] = "connecting";
+
+  String json;
+  root.printTo(json);
   
   webserver.send(200, "application/json", json);
 }

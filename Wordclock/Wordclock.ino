@@ -25,6 +25,8 @@ void setup() {
   Serial.begin(115200);
   Serial.print("BITLAIR Wordclock, v");
   Serial.println(version);
+  Serial.print("ESP ID: ");
+  Serial.println(String(ESP.getChipId()));
 
   wifiSetup();
   webserverSetup();
