@@ -3,6 +3,7 @@
 #include <ESP8266WebServer.h>
 #include <FS.h>
 #include "ArduinoJson.h"
+#include <IPAddress.h>
 
 ESP8266WebServer webserver(80);
 StaticJsonBuffer<10000> jsonBuffer;
@@ -16,11 +17,36 @@ void webserverSetup() {
   webserver.on("/wifi/connect", apiWifiConnect);
   
   webserver.onNotFound([]() {
+    if (webserverHandleCaptivePortal()) return;
+    
     if (!webserverServeFileFromSPIFFS(webserver.uri()))
       webserver.send(404, "text/plain", "404: Not Found");
   });
 
   webserver.begin();   
+}
+
+boolean webserverIsIp(String str) {
+  for (size_t i = 0; i < str.length(); i++) {
+    int c = str.charAt(i);
+    if (c != '.' && (c < '0' || c > '9')) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool webserverHandleCaptivePortal() {
+  if (!webserverIsIp(webserver.hostHeader()) ) {
+    Serial.println("Redirecting to captive portal");
+    
+    webserver.sendHeader("Location", String("http://") + WiFi.softAPIP().toString(), true);
+    webserver.send (302, "text/plain", ""); 
+    webserver.client().stop(); 
+    return true;
+  }
+
+  return false;
 }
 
 void webserverLoop() {
@@ -41,7 +67,7 @@ String webserverGetContentType(String filename) {
   else if(filename.endsWith(".pdf")) return "application/x-pdf";
   else if(filename.endsWith(".zip")) return "application/x-zip";
   else if(filename.endsWith(".gz")) return "application/x-gzip";
-  return "text/plain";
+  return "text/html";
 }
 
 bool webserverServeFileFromSPIFFS(String path) { 
