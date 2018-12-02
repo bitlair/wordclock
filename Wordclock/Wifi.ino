@@ -43,6 +43,7 @@ void wifiLoop() {
       Serial.print("Connected, IP address: ");
       Serial.println(WiFi.localIP());
       wifiDelayedDeactivateAccessPoint();
+      timeSync();
     } else if (WiFi.SSID().length() == 0) {
       wifiActivateAccessPoint();
     } else if ((status == WL_NO_SSID_AVAIL) || (status == WL_CONNECT_FAILED)) {

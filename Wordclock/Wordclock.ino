@@ -1,5 +1,8 @@
+// Inspired by https://github.com/niekproductions/word-clock
+
 // Required Libraries:
 // - Arduino JSON (https://arduinojson.org/)
+// - Time library (http://playground.arduino.cc/code/time)
 
 // Web portal requires files on SPIFFS, please see the following URL for
 // more information:
@@ -20,6 +23,13 @@ struct WifiNetwork {
   bool isHidden;
 };
 
+struct Configuration {
+  char ntp_server[256];
+  uint8_t checksum;
+};
+
+Configuration config;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -28,11 +38,14 @@ void setup() {
   Serial.print("ESP ID: ");
   Serial.println(String(ESP.getChipId()));
 
+  configurationSetup();
   wifiSetup();
   webserverSetup();
+  timeSetup();
 }
 
 void loop() {
   wifiLoop();
   webserverLoop();
+  timeLoop();
 }
