@@ -9,6 +9,12 @@
 
 // http://esp8266.github.io/Arduino/versions/2.0.0/doc/filesystem.html
 
+#define FASTLED_ESP8266_RAW_PIN_ORDER
+#define FASTLED_ALLOW_INTERRUPTS 0
+#include <FastLED.h>
+#include <TimeLib.h>
+#include <vector>
+
 const char *version = "0.1";
 
 #define MAX_WIFI_NETWORKS 32
@@ -23,9 +29,26 @@ struct WifiNetwork {
   bool isHidden;
 };
 
+enum LedMode {
+  single,
+  words,
+  hourly,
+  rainbow
+};
+
 struct Configuration {
   char ntp_server[256];
+  LedMode ledMode;
+  uint8_t singleColorHue;
+  uint8_t hourlyColors[24];
+  uint8_t wordColors[25];
   uint8_t checksum;
+};
+
+struct ClockfaceWord {
+  std::vector<int> leds;
+  int colorCodeInTable;
+  bool (*isActive)(int, int);
 };
 
 Configuration config;
@@ -42,10 +65,12 @@ void setup() {
   wifiSetup();
   webserverSetup();
   timeSetup();
+  ledSetup();
 }
 
 void loop() {
   wifiLoop();
   webserverLoop();
   timeLoop();
+  ledLoop();
 }

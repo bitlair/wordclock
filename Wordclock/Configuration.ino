@@ -1,8 +1,18 @@
 #include <EEPROM.h>
 
 void configurationSetup() {
+  Serial.print("Configuration consists of ");
+  Serial.print(sizeof(Configuration));
+  Serial.println(" bytes");
   EEPROM.begin(sizeof(Configuration));
   loadConfiguration();
+}
+
+void saveConfiguration() {
+  Serial.println("Need to save configuration to EEPROM");
+  config.checksum = calculateConfigChecksum();
+  EEPROM.put(0, config);
+  EEPROM.commit();
 }
 
 void loadConfiguration() {
@@ -24,6 +34,12 @@ void loadDefaultConfiguration() {
   
   char hostname[] = "nl.pool.ntp.org";
   memcpy(config.ntp_server, hostname, sizeof(hostname));
+
+  config.ledMode = single;
+  config.singleColorHue = 13;
+  for(int i = 0; i < sizeof(config.hourlyColors); i++) { config.hourlyColors[i] = random(255); }
+  for(int i = 0; i < sizeof(config.wordColors); i++) { config.wordColors[i] = random(255); }
+
 }
 
 uint8_t calculateConfigChecksum() {

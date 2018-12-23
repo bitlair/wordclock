@@ -15,6 +15,12 @@ void webserverSetup() {
   webserver.on("/wifi/networks", apiWifiNetworks);
   webserver.on("/wifi/disconnect", apiWifiDisconnect);
   webserver.on("/wifi/connect", apiWifiConnect);
+  webserver.on("/led/test", apiShowTestColor);
+  webserver.on("/led/testWord", apiShowTestColorForWord);
+  webserver.on("/led/wordColors", apiSetWordColors);
+  webserver.on("/led/mode", apiSetLedMode);
+  webserver.on("/led/singleColor", apiSetSingleColor);
+  webserver.on("/led/hourlyColors", apiSetHourlyColors);
   
   webserver.onNotFound([]() {
     if (webserverHandleCaptivePortal()) return;
@@ -87,9 +93,48 @@ bool webserverServeFileFromSPIFFS(String path) {
   return false;
 }
 
+void apiSendError(String message) {
+  JsonObject &root = jsonBuffer.createObject();
+  root["error"] = message;
+
+  String json;
+  root.printTo(json);
+  
+  webserver.send(400, "application/json", json);  
+}
+
+void apiSendOK() {
+  JsonObject &root = jsonBuffer.createObject();
+  root["status"] = "ok";
+
+  String json;
+  root.printTo(json);
+  
+  webserver.send(200, "application/json", json);
+}
+
 void apiStatus() {
   JsonObject &root = jsonBuffer.createObject();
   root["version"] = version;
+
+  JsonObject& leds = root.createNestedObject("leds");
+  switch(config.ledMode) {
+    case single: leds["mode"] = "single"; break;
+    case words: leds["mode"] = "words"; break;
+    case hourly: leds["mode"] = "hourly"; break;
+    case rainbow: leds["mode"] = "rainbow"; break;
+  }
+  leds["singleHue"] = config.singleColorHue;
+
+  JsonArray &hourlyHues = leds.createNestedArray("hourlyHues");
+  for(int i = 0; i < sizeof(config.hourlyColors); i++) {
+    hourlyHues.add(config.hourlyColors[i]);
+  }
+
+  JsonArray &wordHues = leds.createNestedArray("wordHues");
+  for(int i = 0; i < sizeof(config.wordColors); i++) {
+    wordHues.add(config.wordColors[i]);
+  }
 
   String json;
   root.printTo(json);
@@ -146,4 +191,100 @@ void apiWifiConnect() {
   root.printTo(json);
   
   webserver.send(200, "application/json", json);
+}
+
+void apiShowTestColor() {
+  String hue = webserver.arg("hue");
+
+  ledTestTime = millis() + 10000;
+  ledTestHue = hue.toInt();
+  ledTestWord = -1;
+
+  apiSendOK();
+
+}
+
+void apiShowTestColorForWord() { 
+  if (!webserver.hasArg("hue")) {
+    apiSendError("Missing hue parameter");
+    return;
+  }
+
+  if (!webserver.hasArg("word")) {
+    apiSendError("Missing word parameter");
+    return;
+  }
+
+  String hue = webserver.arg("hue");
+  String wordArg = webserver.arg("word");
+
+  ledTestTime = millis() + 10000;
+  ledTestHue = hue.toInt();
+  ledTestWord = wordArg.toInt();
+
+  apiSendOK();
+  
+}
+
+void apiSetWordColors() {
+  String argNames[] = { "w0", "w1", "w2", "w3", "w4", "w5", "w6", "w7", "w8", "w9", "w10",
+                        "w11", "w12", "w13", "w14", "w15", "w16", "w17", "w18", "w19",
+                        "w20", "w21", "w22", "w23", "w24" };
+  for(int i = 0; i < 25; i++) {
+    if (webserver.hasArg(argNames[i])) {
+      String arg = webserver.arg(argNames[i]);
+      config.wordColors[i] = arg.toInt(); 
+    }
+  }
+  saveConfiguration();
+  apiSendOK();
+}
+
+void apiSetHourlyColors() {
+  String argNames[] = { "h0", "h1", "h2", "h3", "h4", "h5", "h6", "h7", "h8", "h9", "h10",
+                        "h11", "h12", "h13", "h14", "h15", "h16", "h17", "h18", "h19",
+                        "h20", "h21", "h22", "h23" };
+  for(int i = 0; i < 24; i++) {
+    if (webserver.hasArg(argNames[i])) {
+      String arg = webserver.arg(argNames[i]);
+      config.hourlyColors[i] = arg.toInt(); 
+    }
+  }
+  saveConfiguration();
+  apiSendOK();  
+}
+
+void apiSetLedMode() {
+  if (!webserver.hasArg("mode")) {
+    apiSendError("Missing mode parameter");
+    return;
+  }
+
+  String arg = webserver.arg("mode");
+  if(arg == "single") {
+    config.ledMode = single;
+  } else if (arg == "words") {
+    config.ledMode = words;
+  } else if (arg == "hourly") {
+    config.ledMode = hourly;
+  } else if (arg == "rainbow") {
+    config.ledMode = rainbow;
+  } else {
+    apiSendError("Unknown mode, valid options: 'single', 'hourly', 'rainbow', 'words'");
+    return;
+  }
+
+  saveConfiguration();
+  apiSendOK();
+}
+
+void apiSetSingleColor() {
+  if (!webserver.hasArg("hue")) {
+    apiSendError("Missing hue parameter");
+    return;
+  }
+
+  config.singleColorHue = webserver.arg("hue").toInt();
+  saveConfiguration();
+  apiSendOK();
 }
