@@ -162,8 +162,30 @@ void ledShowTestColor() {
   FastLED.show();  
 }
 
+void ledShowNoWifiStatus() {
+  if ((millis() - lastLedUpdate) > LED_UPDATE_TIME) {
+    lastLedUpdate = millis();
+
+    for(int i = 0; i < NUM_LEDS; i++) {
+      leds[i] = CRGB::Black;
+    }
+    leds[3] = CRGB::Blue;
+    FastLED.show();  
+  }
+}
+
+void ledShowNoNTPStatus() {
+  for(int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = CRGB::Black;
+  }
+  leds[3] = CRGB::Blue;
+  leds[2] = CRGB::Blue;
+  FastLED.show();  
+}
+
 void ledLoop() {
   bool isLedTestActive = ledTestTime > millis();
+  //bool validNtpTime = timeStatus() != timeNotSet;
 
   if ((millis() - ledRandomTime) > LED_RAINBOW_TIME) {  
     ledRandomTime = millis();
@@ -175,13 +197,14 @@ void ledLoop() {
     case 1: 
       if (isLedTestActive) {
         ledShowTestColor();
-      } else {
+      } /*else if (wifiIsAccessPointActive()) {
+        ledShowNoWifiStatus();
+      } else if (!validNtpTime) {
+        ledShowNoNTPStatus();
+      } */else {
         ledShowClockface(); 
+        ledFadeToAssignedColors();
       }
       break;
-  }
-  
-  if ((ledState != 0) && (!isLedTestActive)) {
-    ledFadeToAssignedColors();
   }
 }

@@ -1,4 +1,3 @@
-#include <ESP8266WiFi.h>
 #include <DNSServer.h>
 
 WifiNetwork known_wifi_networks[MAX_WIFI_NETWORKS];
@@ -74,6 +73,10 @@ void wifiConnect(String ssid, String password) {
   } else {
     WiFi.begin(ssid.c_str());
   }
+}
+
+bool wifiIsAccessPointActive() {
+  return access_point_status == AP_ON;
 }
 
 void wifiActivateAccessPoint() {

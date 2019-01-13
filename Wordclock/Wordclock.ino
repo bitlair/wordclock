@@ -14,6 +14,7 @@
 #include <FastLED.h>
 #include <TimeLib.h>
 #include <vector>
+#include <ESP8266WiFi.h>
 
 const char *version = "0.1";
 

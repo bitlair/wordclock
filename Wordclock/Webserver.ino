@@ -11,16 +11,16 @@ StaticJsonBuffer<10000> jsonBuffer;
 void webserverSetup() {
   SPIFFS.begin();
 
-  webserver.on("/status", apiStatus);
-  webserver.on("/wifi/networks", apiWifiNetworks);
-  webserver.on("/wifi/disconnect", apiWifiDisconnect);
-  webserver.on("/wifi/connect", apiWifiConnect);
-  webserver.on("/led/test", apiShowTestColor);
-  webserver.on("/led/testWord", apiShowTestColorForWord);
-  webserver.on("/led/wordColors", apiSetWordColors);
-  webserver.on("/led/mode", apiSetLedMode);
-  webserver.on("/led/singleColor", apiSetSingleColor);
-  webserver.on("/led/hourlyColors", apiSetHourlyColors);
+  webserver.on("/api/status", apiStatus);
+  webserver.on("/api/wifi/networks", apiWifiNetworks);
+  webserver.on("/api/wifi/disconnect", apiWifiDisconnect);
+  webserver.on("/api/wifi/connect", apiWifiConnect);
+  webserver.on("/api/led/test", apiShowTestColor);
+  webserver.on("/api/led/testWord", apiShowTestColorForWord);
+  webserver.on("/api/led/wordColors", apiSetWordColors);
+  webserver.on("/api/led/mode", apiSetLedMode);
+  webserver.on("/api/led/singleColor", apiSetSingleColor);
+  webserver.on("/api/led/hourlyColors", apiSetHourlyColors);
   
   webserver.onNotFound([]() {
     if (webserverHandleCaptivePortal()) return;
