@@ -136,6 +136,25 @@ void apiStatus() {
     wordHues.add(config.wordColors[i]);
   }
 
+  JsonObject &wifi = root.createNestedObject("wifi");
+  wifi["accessPoint"] = wifiIsAccessPointActive() ? "active": "inactive";
+  
+  switch(WiFi.status()) {
+    case WL_IDLE_STATUS: wifi["status"] = "idle"; break;
+    case WL_NO_SSID_AVAIL: wifi["status"] = "ssid_unavailable"; break;
+    case WL_CONNECTED: wifi["status"] = "connected"; break;
+    case WL_CONNECT_FAILED: wifi["status"] = "connect_failed"; break;
+    case WL_DISCONNECTED: wifi["status"] = "disconnected"; break;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    wifi["ip"] = WiFi.localIP().toString();
+    wifi["mask"] = WiFi.subnetMask().toString();
+    wifi["gateway"] = WiFi.gatewayIP().toString();
+    wifi["dns"] = WiFi.dnsIP().toString();
+    wifi["ssid"] = WiFi.SSID();
+  }
+
   String json;
   root.printTo(json);
   
