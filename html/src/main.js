@@ -15,7 +15,6 @@ Vue.use(VueAxios, axios)
 Vue.use(BootstrapVue);
 
 Vue.config.productionTip = false
-/* eslint-disable */
 
 Vue.axios.get('/api/status')
     .then(response => {
@@ -33,6 +32,6 @@ Vue.axios.get('/api/status')
         el: '#app',
         router,
         store,
-        render: h => h(App),
+        render: h => h(App)
       })
   })

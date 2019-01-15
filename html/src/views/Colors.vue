@@ -2,15 +2,24 @@
   <div class="colors">
     <h1>Kleur instellingen</h1>
 
-    <div>
-      <input type="radio" id="single" value="single" v-model="mode">
-      <label for="single">Enkele kleur</label>
-      <input type="radio" id="rainbow" value="rainbow" v-model="mode">
-      <label for="rainbow">Regenboog</label>
-      <input type="radio" id="words" value="words" v-model="mode">
-      <label for="words">Per woord</label>
-      <input type="radio" id="hourly" value="hourly" v-model="mode">
-      <label for="hourly">Per uur</label>
+    <p>Je kan de woordklok op allerlei verschillende kleuren instellen. De volgende manieren
+      worden ondersteund:</P>
+
+    <div class="form-check">
+      <input class="form-check-input" type="radio" id="single" value="single" v-model="mode">
+      <label class="form-check-label" for="single">Enkele kleur</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" id="rainbow" value="rainbow" v-model="mode">
+      <label class="form-check-label" for="rainbow">Regenboog</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" id="words" value="words" v-model="mode">
+      <label class="form-check-label" for="words">Per woord</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" id="hourly" value="hourly" v-model="mode">
+      <label class="form-check-label" for="hourly">Per uur</label>
     </div>
 
     <div class="settings">
@@ -53,3 +62,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.settings {
+  margin-top: 20px;
+}
+</style>

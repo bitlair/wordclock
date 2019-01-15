@@ -1,14 +1,14 @@
 <template>
   <div>
     In deze stand veranderd de woord klok ieder uur naar een andere kleur. 
-    
-    <div v-for="(hour, index) in hours">
-      {{ hour }} <hue-slider :value="hourlyHues[index]" @input="updateHourlyHue(index, $event)" /><br />
+
+    <div v-for="(hour, index) in hours" v-bind:key="index" class="form-group row">
+      <label class="col-sm-2 col-form-label">{{ hour }}</label>
+      <hue-slider class="col-sm-10" :value="hourlyHues[index]" @input="updateHourlyHue(index, $event)" />
     </div>
 
     <br /><br /><br />
-    <button v-on:click="save">Opslaan</button>
-
+    <button class="btn btn-primary"  v-on:click="save">Opslaan</button>
   </div>
 </template>
 

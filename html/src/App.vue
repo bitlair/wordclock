@@ -1,35 +1,33 @@
 <template>
   <div id="app">
     <b-container>
-      <nav class="navbar navbar-expand-lg ">
-        <a class="navbar-brand" href="#">
-          <img alt="Bitlair logo" src="./assets/bitlair.svg" height="30">
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+      <b-navbar toggleable="md">
+        <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <router-link to="/">Kleuren</router-link> 
-            </li>
-            <li class="nav-item">
-              <router-link to="/wifi">WiFi</router-link> 
-            </li>
-            <li class="nav-item">
-              <router-link to="/advanced">Geavanceerd</router-link> 
-            </li>
-            <li class="nav-item">
-              <router-link to="/about">Informatie</router-link>
-            </li>
-          </ul>
+        <b-navbar-brand href="#"><img alt="Bitlair logo" src="./assets/bitlair.svg" height="30"></b-navbar-brand>
 
-          <span class="navbar-text">
-            Wordclock
-          </span>
-        </div>
-      </nav>
+        <b-collapse is-nav id="nav_collapse">
+
+          <b-navbar-nav class="mr-auto">
+            <li class="nav-item">
+              <router-link to="/" class="nav-link">Kleuren</router-link> 
+            </li>
+            <li class="nav-item">
+              <router-link to="/wifi" class="nav-link">WiFi</router-link> 
+            </li>
+            <li class="nav-item">
+              <router-link to="/advanced" class="nav-link">Geavanceerd</router-link> 
+            </li>
+            <li class="nav-item">
+              <router-link to="/about" class="nav-link">Informatie</router-link>
+            </li>
+          </b-navbar-nav>
+
+          <b-nav-text>Woordklok</b-nav-text>
+        </b-collapse>
+      </b-navbar>
+
+      <wifi-warning />
 
       <router-view/>
     </b-container>
@@ -43,13 +41,34 @@
   -moz-osx-font-smoothing: grayscale;
 }
 .navbar {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
+  padding: 0px !important;
+  margin-bottom: 20px;
+
+  .nav-item {
+    a {
+      font-weight: bold;
+      color: #000000;
+      &.router-link-exact-active {
+        color: #fc5d1dff;
+      }
     }
   }
 }
+#wifialert {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 </style>
+
+<script>
+import WifiWarning from '@/components/WifiWarning.vue'
+import { mapState } from 'vuex'
+
+export default {
+  name: 'App',
+  computed: mapState([ 'wifi' ]),
+  components: {
+    WifiWarning
+  }
+}
+</script>
