@@ -9,7 +9,7 @@
     <h3>Beschikbare netwerken</h3>
     <b-table striped hover :items="networks" :fields="fields">
       <template slot="connect" slot-scope="network">
-        <button>selecteer</button>
+        <button>selecteer {{network.ssid}}</button>
       </template>
     </b-table>
   </div>

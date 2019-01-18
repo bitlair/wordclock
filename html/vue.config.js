@@ -2,7 +2,7 @@ module.exports = {
   devServer: {
   	proxy: {
       '/api': {
-        target: 'http://10.0.1.161',
+        target: 'http://100.64.0.69',
         ws: true,
         changeOrigin: true
       }
