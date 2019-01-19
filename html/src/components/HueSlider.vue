@@ -1,6 +1,6 @@
 <template>
   <div class="hueSlider">
-    <input type="range" min="0" max="255" id="formControlRange" v-bind:value="value"
+    <input type="range" class="hue" min="0" max="255" id="formControlRange" v-bind:value="value"
       v-on:change="$emit('input', $event.target.value)"> {{ value }}
   </div>
 </template>
@@ -13,7 +13,7 @@ export default {
 </script>
 
 <style>
-input[type=range] {
+input[type=range].hue {
   outline: 0;
   -webkit-appearance: none;
   width: 400px;

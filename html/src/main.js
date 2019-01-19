@@ -24,7 +24,12 @@ Vue.axios.get('/api/status')
           ledMode(state, mode) { state.leds.mode = mode },
           singleHue(state, hue) { state.leds.singleHue = hue },
           wordHue(state, args) { state.leds.wordHues[args.index] = args.hue },
-          hourlyHue(state, args) { state.leds.hourlyHues[args.index] = args.hue }
+          hourlyHue(state, args) { state.leds.hourlyHues[args.index] = args.hue },
+          maxBrightness(state, brightness) { state.leds.brightness.max = brightness },
+          minBrightness(state, brightness) { state.leds.brightness.min = brightness },
+          brightnessType(state, type) { state.leds.brightness.mode = type },
+          brightnessStartHour(state, hour) { state.leds.brightness.startHour = hour },
+          brightnessEndHour(state, hour) { state.leds.brightness.endHour = hour } 
         }
       })
 
