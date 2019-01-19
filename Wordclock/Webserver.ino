@@ -8,6 +8,9 @@
 ESP8266WebServer webserver(80);
 StaticJsonBuffer<10000> jsonBuffer;
 
+ESP8266HTTPUpdateServer flashUpdateServer(true, U_FLASH);
+ESP8266HTTPUpdateServer spiffsUpdateServer(true, U_SPIFFS);
+
 void webserverSetup() {
   SPIFFS.begin();
 
@@ -21,6 +24,7 @@ void webserverSetup() {
   webserver.on("/api/led/mode", apiSetLedMode);
   webserver.on("/api/led/singleColor", apiSetSingleColor);
   webserver.on("/api/led/hourlyColors", apiSetHourlyColors);
+  webserver.on("/api/led/brightness", apiSetBrightness);
   
   webserver.onNotFound([]() {
     if (webserverHandleCaptivePortal()) return;
@@ -29,6 +33,8 @@ void webserverSetup() {
       webserver.send(404, "text/plain", "404: Not Found");
   });
 
+  flashUpdateServer.setup(&webserver, String("/api/update/flash"));
+  spiffsUpdateServer.setup(&webserver, String("/api/update/spiffs"));
   webserver.begin();   
 }
 
@@ -118,6 +124,8 @@ void apiStatus() {
   root["version"] = version;
 
   JsonObject& leds = root.createNestedObject("leds");
+  leds["hasLDR"] = ledHasLDR;
+  
   switch(config.ledMode) {
     case single: leds["mode"] = "single"; break;
     case words: leds["mode"] = "words"; break;
@@ -135,6 +143,17 @@ void apiStatus() {
   for(int i = 0; i < sizeof(config.wordColors); i++) {
     wordHues.add(config.wordColors[i]);
   }
+
+  JsonObject &brightness = leds.createNestedObject("brightness");
+  switch(config.brightnessMode) {
+    case fixedBrightness: brightness["mode"] = "fixed"; break;
+    case ldrBrightness: brightness["mode"] = "ldr"; break;
+    case timeBrightness: brightness["mode"] = "time"; break;
+  }
+  brightness["min"] = config.minBrightness;
+  brightness["max"] = config.maxBrightness;
+  brightness["startHour"] = config.brightnessStartHour;
+  brightness["endHour"] = config.brightnessEndHour;
 
   JsonObject &wifi = root.createNestedObject("wifi");
   wifi["accessPoint"] = wifiIsAccessPointActive() ? "active": "inactive";
@@ -306,4 +325,39 @@ void apiSetSingleColor() {
   config.singleColorHue = webserver.arg("hue").toInt();
   saveConfiguration();
   apiSendOK();
+}
+
+void apiSetBrightness() {
+  if (webserver.hasArg("type")) {
+    String arg = webserver.arg("type");
+    if(arg == "fixed") {
+      config.brightnessMode = fixedBrightness;
+    } else if (arg == "ldr") {
+      config.brightnessMode = ldrBrightness;
+    } else if (arg == "time") {
+      config.brightnessMode = timeBrightness;
+    } else {
+      apiSendError("Unknown type, valid options: 'fixed', 'ldr', 'time'");
+      return;
+    }
+  }
+
+  if (webserver.hasArg("min")) {
+    config.minBrightness = webserver.arg("min").toInt();
+  }
+
+  if (webserver.hasArg("max")) {
+    config.maxBrightness = webserver.arg("max").toInt();
+  }
+
+  if (webserver.hasArg("startHour")) {
+    config.brightnessStartHour = webserver.arg("startHour").toInt();
+  }
+
+  if (webserver.hasArg("endHour")) {
+    config.brightnessEndHour = webserver.arg("endHour").toInt();
+  }
+
+  saveConfiguration();
+  apiSendOK();  
 }

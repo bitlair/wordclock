@@ -15,6 +15,7 @@
 #include <TimeLib.h>
 #include <vector>
 #include <ESP8266WiFi.h>
+#include "ESP8266HTTPUpdateServer.h"
 
 const char *version = "0.1";
 
@@ -37,12 +38,23 @@ enum LedMode {
   rainbow
 };
 
+enum BrightnessMode {
+  fixedBrightness,
+  ldrBrightness,
+  timeBrightness
+};
+
 struct Configuration {
   char ntp_server[256];
   LedMode ledMode;
   uint8_t singleColorHue;
   uint8_t hourlyColors[24];
   uint8_t wordColors[25];
+  BrightnessMode brightnessMode;
+  uint8_t maxBrightness;
+  uint8_t minBrightness;
+  uint8_t brightnessStartHour;
+  uint8_t brightnessEndHour;
   uint8_t checksum;
 };
 

@@ -40,6 +40,11 @@ void loadDefaultConfiguration() {
   for(int i = 0; i < sizeof(config.hourlyColors); i++) { config.hourlyColors[i] = random(255); }
   for(int i = 0; i < sizeof(config.wordColors); i++) { config.wordColors[i] = random(255); }
 
+  config.brightnessMode = ldrBrightness;
+  config.maxBrightness = 255;
+  config.minBrightness = 65;
+  config.brightnessStartHour = 8;
+  config.brightnessEndHour = 22;
 }
 
 uint8_t calculateConfigChecksum() {

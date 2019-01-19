@@ -5,6 +5,11 @@
 #define NUM_LEDS 94
 #define DATA_PIN D2
 
+#define LDR_PIN         A0
+#define LDR_DARK        10
+#define LDR_LIGHT       200
+#define LDR_READ_DELAY  1000
+
 CRGB leds[NUM_LEDS];
 CRGB targetColors[NUM_LEDS];
 long lastLedUpdate;
@@ -19,6 +24,9 @@ int8_t ledTestWord = -1;
 
 long ledRandomHue = 0;
 long ledRandomTime = 0;
+
+long ldrReadTime = 0;
+int ldrValue = 0;
 
 uint8_t ledMatrix[][10] = {
   { 84,85,86,87,88,89,90,91,92,93 },
@@ -78,6 +86,47 @@ CRGB fadeTowardColor(CRGB &cur, const CRGB &target, uint8_t amount)
 long switchTime;
 int state;
 
+byte calculateTimeBrightness() {
+    if (hour() > config.brightnessStartHour && hour() < config.brightnessEndHour) {
+        return config.maxBrightness;
+    } else if (hour() < config.brightnessStartHour || hour() > config.brightnessEndHour) {
+        return config.minBrightness;
+    } else if (hour() == config.brightnessStartHour) {
+        return constrain(
+                map(minute(), 0, 29, config.minBrightness, config.maxBrightness),
+                config.minBrightness, config.maxBrightness);
+    } else if (hour() == config.brightnessEndHour) {
+        return constrain(
+                map(minute(), 0, 29, config.maxBrightness, config.minBrightness),
+                config.minBrightness, config.maxBrightness);
+    }
+}
+
+byte lastBrightness;
+byte ledBrightness() {
+  byte targetBrightness = config.maxBrightness;
+  switch(config.brightnessMode) {
+    case fixedBrightness: targetBrightness = config.maxBrightness; break;
+    case timeBrightness: targetBrightness = calculateTimeBrightness(); break;
+    case ldrBrightness: targetBrightness = constrain(
+                map(ldrValue, LDR_DARK, LDR_LIGHT, config.minBrightness, config.maxBrightness),
+                config.minBrightness, config.maxBrightness); break;
+  }
+
+  if (lastBrightness == 0) {
+    lastBrightness = targetBrightness;
+  } else {
+    int difference = abs(targetBrightness - lastBrightness);
+    if (targetBrightness > lastBrightness) {
+        lastBrightness = lastBrightness + (1 + 30 * difference / 189 );
+    }else if (targetBrightness < lastBrightness) {
+        lastBrightness = lastBrightness - (1 + 30 * difference / 189 );
+    }
+  }
+
+  return lastBrightness;
+}
+
 void ledFadeToAssignedColors() {
   if ((millis() - lastLedUpdate) > LED_UPDATE_TIME) {
     lastLedUpdate = millis();
@@ -86,7 +135,7 @@ void ledFadeToAssignedColors() {
       fadeTowardColor(leds[i], targetColors[i], LED_TRANSITION_AMOUNT);
     }
 
-    FastLED.show();
+    FastLED.show(ledBrightness());
   }
 }
 
@@ -104,7 +153,7 @@ void ledScrollIntro() {
         leds[position] = color;
       }
     }
-    FastLED.show();
+    FastLED.show(ledBrightness());
 
     int8_t scrollsize = (sizeof(startupText[0]) + sizeof(ledMatrix[0]));
     ledScrollPosition++;
@@ -159,7 +208,7 @@ void ledShowTestColor() {
       }
     }
   }
-  FastLED.show();  
+  FastLED.show(ledBrightness());  
 }
 
 void ledShowNoWifiStatus() {
@@ -170,7 +219,7 @@ void ledShowNoWifiStatus() {
       leds[i] = CRGB::Black;
     }
     leds[3] = CRGB::Blue;
-    FastLED.show();  
+    FastLED.show(ledBrightness());  
   }
 }
 
@@ -180,15 +229,26 @@ void ledShowNoNTPStatus() {
   }
   leds[3] = CRGB::Blue;
   leds[2] = CRGB::Blue;
-  FastLED.show();  
+  FastLED.show(ledBrightness());  
+}
+
+bool ledHasLDR() {
+  return ldrValue < LDR_DARK;
 }
 
 void ledLoop() {
-  bool isLedTestActive = ledTestTime > millis();
+  long current = millis();
+  
+  if ((current - ldrReadTime) > LDR_READ_DELAY) {
+    ldrReadTime = current;
+    ldrValue = analogRead(LDR_PIN);
+  }
+
+  bool isLedTestActive = ledTestTime > current;
   //bool validNtpTime = timeStatus() != timeNotSet;
 
-  if ((millis() - ledRandomTime) > LED_RAINBOW_TIME) {  
-    ledRandomTime = millis();
+  if ((current - ledRandomTime) > LED_RAINBOW_TIME) {  
+    ledRandomTime = current;
     ledRandomHue++;
   }
   
