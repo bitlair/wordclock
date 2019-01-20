@@ -1,9 +1,9 @@
 <template>
   <div class="about">
-    <h1>Netwerk configuratie</h1>
+    <h1>Netwerkconfiguratie</h1>
 
     <b-alert variant="success" show v-if="wifi.status === 'connected'">
-      De woordklok is op dit moment verbonden met het WiFi netwerk '{{ wifi.ssid }}'
+      De woordklok is op dit moment verbonden met het WiFi-netwerk '{{ wifi.ssid }}'
     </b-alert>
 
     <h3>Beschikbare netwerken</h3>
