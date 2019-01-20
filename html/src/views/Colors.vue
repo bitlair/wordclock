@@ -1,6 +1,6 @@
 <template>
   <div class="colors">
-    <h1>Kleur instellingen</h1>
+    <h1>Kleurinstellingen</h1>
 
     <p>Je kan de woordklok op allerlei verschillende kleuren instellen. De volgende manieren
       worden ondersteund:</P>

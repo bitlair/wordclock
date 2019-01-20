@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>About</h1>
+    <h1>Over de woordklok</h1>
     <p>
     Deze woordklok is bij Hackerspace Bitlair gebouwd.
     Voor meer informatie over Bitlair (eerst met wifi netwerk verbinden) <a href="https://github.com/bitlair">Bitlair</a></p>

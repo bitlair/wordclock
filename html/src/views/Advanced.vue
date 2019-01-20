@@ -65,7 +65,7 @@
         <button type="submit" class="btn btn-primary">Uploaden</button>
       </form>
       <br /><br />
-      <h5>Gebruikers interface</h5>
+      <h5>Gebruikersinterface</h5>
       <form method="post" action="/api/update/spiffs" enctype="multipart/form-data">
         <div class="custom-file">
           <input type="file" name="update" class="custom-file-input" id="flashfile" required>
