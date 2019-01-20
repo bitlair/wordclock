@@ -1,6 +1,6 @@
 <template>
   <div>
-    In deze stand veranderd de woord klok ieder uur naar een andere kleur. 
+    In deze stand verandert de woord klok ieder uur naar een andere kleur. 
 
     <div v-for="(hour, index) in hours" v-bind:key="index" class="form-group row">
       <label class="col-sm-2 col-form-label">{{ hour }}</label>
