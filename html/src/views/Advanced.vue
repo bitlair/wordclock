@@ -10,7 +10,7 @@
       </div>
       <div class="form-check">
         <input class="form-check-input" type="radio" id="ldr" value="ldr" v-model="brightnessType">
-        <label class="form-check-label" for="ldr">Op basis van licht sensor</label>
+        <label class="form-check-label" for="ldr">Op basis van lichtsensor</label>
       </div>
       <div class="form-check">
         <input class="form-check-input" type="radio" id="time" value="time" v-model="brightnessType">
@@ -26,11 +26,11 @@
 
       <div class="form-row" v-if="(brightnessType === 'time')">
         <div class="form-group col-md-6">
-          <label for="startTime">Start tijd (naar maximum)</label>
+          <label for="startTime">Starttijd (naar maximum)</label>
           <input type="number" min="0" max="23" class="form-control" id="startTime" v-model="startHour">
         </div>
         <div class="form-group col-md-6">
-          <label for="endTime">Eind tijd (naar minimum)</label>
+          <label for="endTime">Eindtijd (naar minimum)</label>
           <input type="number" min="0" max="23" class="form-control" id="endTime" v-model="endHour">
         </div>
       </div>
