@@ -26,7 +26,7 @@
       <colors-single v-if="mode === 'single'" />
 
       <template v-if="mode === 'rainbow'">
-        In regenboog mode zal de woordklok automatisch geleidelijk van kleur veranderen. 
+        In regenboogstand zal de woordklok automatisch geleidelijk van kleur veranderen. 
         Er zijn in deze stand geen kleur instellingen mogelijk.
       </template>
 
