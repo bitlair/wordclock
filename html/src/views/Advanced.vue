@@ -47,20 +47,6 @@
       <button type="submit" class="btn btn-primary" v-on:click="saveBrightness">Opslaan</button>
     </div>
     <br><br>
-    <h3>mDNS</h3>
-    <p>Voor systemen die bonjour ondersteunen (mDNS) is het mogelijk om de woordklok interface te benaderen via http://{{ hostname }}.local</p>
-
-    <b-alert variant="warning" show>
-    Let op! Na aanpassen van de hostname zal de woordklok opnieuw opstarten.</b-alert>
-
-    <div class="advancedGroup">
-      <div class="form-group row">
-        <label for="hostname" class="col-sm-2 col-form-label">Hostname</label>
-        <input type="text" class="col-sm-10 form-control" id="hostname" v-model="hostname">
-      </div>
-      <button type="submit" class="btn btn-primary" v-on:click="setHostname">Opslaan</button>
-    </div>
-    <br><br>
     <h3>Software updates</h3>
 
     <p>De software voor de woordklok bestaat uit twee delen, namelijk de firmware voor de klok zelf en de gebruikers interface. Deze moeten als afzonderlijke bestanden worden geupload.</p>

@@ -2,7 +2,6 @@
 
 #include <ESP8266WebServer.h>
 #include <FS.h>
-#include "ArduinoJson.h"
 #include <IPAddress.h>
 
 ESP8266WebServer webserver(80);
@@ -101,24 +100,31 @@ bool webserverServeFileFromSPIFFS(String path) {
   return false;
 }
 
+void apiSendJSON(int status, JsonObject *object) {
+  String json;
+  object->printTo(json);
+  webserver.send(status, "application/json", json); 
+  jsonBuffer.clear();
+}
+
+void apiSendJSONArray(int status, JsonArray *object) {
+  String json;
+  object->printTo(json);
+  webserver.send(status, "application/json", json); 
+  jsonBuffer.clear();
+}
+
 void apiSendError(String message) {
   JsonObject &root = jsonBuffer.createObject();
   root["error"] = message;
-
-  String json;
-  root.printTo(json);
-  
-  webserver.send(400, "application/json", json);  
+  apiSendJSON(400, &root);
 }
 
 void apiSendOK() {
   JsonObject &root = jsonBuffer.createObject();
   root["status"] = "ok";
 
-  String json;
-  root.printTo(json);
-  
-  webserver.send(200, "application/json", json);
+  apiSendJSON(200, &root);
 }
 
 void apiStatus() {
@@ -177,10 +183,7 @@ void apiStatus() {
     wifi["ssid"] = WiFi.SSID();
   }
 
-  String json;
-  root.printTo(json);
-  
-  webserver.send(200, "application/json", json);
+  apiSendJSON(200, &root);
 }
 
 void apiWifiNetworks() {
@@ -202,20 +205,14 @@ void apiWifiNetworks() {
     }
   }
 
-  String json;
-  networks.printTo(json);
-  
-  webserver.send(200, "application/json", json);
+  apiSendJSONArray(200, &networks);
 }
 
 void apiWifiDisconnect() {
   JsonObject &root = jsonBuffer.createObject();
   root["status"] = "ok";
 
-  String json;
-  root.printTo(json);
-  
-  webserver.send(200, "application/json", json);
+  apiSendJSON(200, &root);
   wifiDisconnect();
 }
 
@@ -228,10 +225,7 @@ void apiWifiConnect() {
   JsonObject &root = jsonBuffer.createObject();
   root["status"] = "connecting";
 
-  String json;
-  root.printTo(json);
-  
-  webserver.send(200, "application/json", json);
+  apiSendJSON(200, &root);
 }
 
 void apiShowTestColor() {
