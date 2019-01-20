@@ -16,12 +16,14 @@
 #include <vector>
 #include <ESP8266WiFi.h>
 #include "ESP8266HTTPUpdateServer.h"
+#include <ESP8266mDNS.h>
 
 const char *version = "0.1";
 
 #define MAX_WIFI_NETWORKS 32
 #define MAX_SSID_LENGTH 32
 #define WIFI_NETWORK_UPDATE_INTERVAL 60000
+#define HOSTNAME_MAX 256
 
 struct WifiNetwork {
   char ssid[MAX_SSID_LENGTH + 1];
@@ -46,6 +48,7 @@ enum BrightnessMode {
 
 struct Configuration {
   char ntp_server[256];
+  char hostname[HOSTNAME_MAX];
   LedMode ledMode;
   uint8_t singleColorHue;
   uint8_t hourlyColors[24];

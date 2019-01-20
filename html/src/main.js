@@ -29,7 +29,8 @@ Vue.axios.get('/api/status')
           minBrightness(state, brightness) { state.leds.brightness.min = brightness },
           brightnessType(state, type) { state.leds.brightness.mode = type },
           brightnessStartHour(state, hour) { state.leds.brightness.startHour = hour },
-          brightnessEndHour(state, hour) { state.leds.brightness.endHour = hour } 
+          brightnessEndHour(state, hour) { state.leds.brightness.endHour = hour },
+          hostname(state, value) { state.hostname = value }
         }
       })
 

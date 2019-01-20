@@ -25,6 +25,8 @@ void webserverSetup() {
   webserver.on("/api/led/singleColor", apiSetSingleColor);
   webserver.on("/api/led/hourlyColors", apiSetHourlyColors);
   webserver.on("/api/led/brightness", apiSetBrightness);
+  webserver.on("/api/resetSettings", apiResetSettings);
+  webserver.on("/api/hostname", apiHostname);
   
   webserver.onNotFound([]() {
     if (webserverHandleCaptivePortal()) return;
@@ -122,9 +124,9 @@ void apiSendOK() {
 void apiStatus() {
   JsonObject &root = jsonBuffer.createObject();
   root["version"] = version;
+  root["hostname"] = config.hostname;
 
   JsonObject& leds = root.createNestedObject("leds");
-  leds["hasLDR"] = ledHasLDR;
   
   switch(config.ledMode) {
     case single: leds["mode"] = "single"; break;
@@ -154,6 +156,7 @@ void apiStatus() {
   brightness["max"] = config.maxBrightness;
   brightness["startHour"] = config.brightnessStartHour;
   brightness["endHour"] = config.brightnessEndHour;
+  brightness["hasLDR"] = ledHasLDR;
 
   JsonObject &wifi = root.createNestedObject("wifi");
   wifi["accessPoint"] = wifiIsAccessPointActive() ? "active": "inactive";
@@ -360,4 +363,31 @@ void apiSetBrightness() {
 
   saveConfiguration();
   apiSendOK();  
+}
+
+void apiResetSettings() {
+  loadDefaultConfiguration();
+  saveConfiguration();
+  apiSendOK();
+}
+
+void apiHostname() {
+  if (!webserver.hasArg("hostname")) {
+    apiSendError("Missing hostname parameter");
+    return;
+  }
+
+  String hostname = webserver.arg("hostname");
+  if (hostname.length() >= (HOSTNAME_MAX - 1)) {
+    apiSendError("Hostname too long");
+  }
+
+  Serial.print("Updating mDNS hostname to ");
+  Serial.println(hostname);
+  
+  memcpy(config.hostname, hostname.c_str(), hostname.length() + 1);
+  saveConfiguration();
+
+  apiSendOK();
+  ESP.restart();
 }

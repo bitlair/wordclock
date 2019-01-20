@@ -20,6 +20,10 @@ access_point_status access_point_status = AP_OFF;
 long access_point_pending_action ;
 
 void wifiSetup() {
+  if (!MDNS.begin(config.hostname)) {
+    Serial.println("Unable to setup mDNS hostname");
+  }
+  
   WiFi.begin();  
 
   if (WiFi.SSID().length() == 0) {
@@ -29,15 +33,20 @@ void wifiSetup() {
     Serial.println(WiFi.SSID());
     wifiDeactivateAccessPoint();
   }
+
+  MDNS.addService("http", "tcp", 80);
 }
 
 void wifiLoop() {
   wl_status_t status = WiFi.status();
+
+  MDNS.update();
   
   if (last_wifi_status != status) {
     last_wifi_status = status;
     
     if (status == WL_CONNECTED) {
+      MDNS.notifyAPChange();
       WiFi.setAutoReconnect(true);
       Serial.print("Connected, IP address: ");
       Serial.println(WiFi.localIP());
@@ -46,6 +55,7 @@ void wifiLoop() {
     } else if (WiFi.SSID().length() == 0) {
       wifiActivateAccessPoint();
     } else if ((status == WL_NO_SSID_AVAIL) || (status == WL_CONNECT_FAILED)) {
+      MDNS.notifyAPChange();
       wifiDelayedActivateAccessPoint();
     } else {
       Serial.print("New WiFi status: ");
