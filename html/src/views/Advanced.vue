@@ -2,7 +2,7 @@
   <div class="about">
     <h1>Geavanceerde instellingen</h1>
 
-    <h3>Licht sterkte</h3>
+    <h3>Lichtsterkte</h3>
     <div class="advancedGroup">
          <div class="form-check">
         <input class="form-check-input" type="radio" id="fixed" value="fixed" v-model="brightnessType">
