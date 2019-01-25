@@ -82,7 +82,7 @@ bool quarter(int hour, int minute) {
 
 bool past(int hour, int minute) {
   if ((minute >= 5) && (minute < 20)) return true;
-  if ((minute >= 35) && (minute < 44)) return true;
+  if ((minute >= 35) && (minute < 45)) return true;
   return false;
 }
 
